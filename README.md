@@ -68,8 +68,21 @@ This will open the app in your browser at `http://localhost:3000`.
 
 ---
 
+## **Install Node Modules (if not present)**
+
+If you clone this repository or start a new instance of the project, **you'll need to install the dependencies**. To do this, run the following command:
+
+```bash
+npm install
+```
+
+This will automatically install all the dependencies listed in the `package.json` file, including **React**, **Material-UI**, **Firebase**, etc., inside the `node_modules` directory.
+
+> **Note**: The `node_modules/` directory is **not tracked by Git** and is listed in `.gitignore` to avoid unnecessary uploads to the repository.
+
+---
+
 ## **Optional: Additional Setup**
 
 - If you need to store environment variables (such as Firebase configuration keys), create a `.env` file in the root directory of your project.
 - Ensure that sensitive files like `.env` are added to `.gitignore` to keep them secure.
-  
