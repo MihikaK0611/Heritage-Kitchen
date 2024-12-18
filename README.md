@@ -70,7 +70,11 @@ This will open the app in your browser at `http://localhost:3000`.
 
 ## **Install Node Modules (if not present)**
 
-If you clone this repository or start a new instance of the project, **you'll need to install the dependencies**. To do this, run the following command:
+If you clone this repository or start a new instance of the project, **you'll first need to remove package-lock.json file and then install the dependencies**. To do this, run the following commands:
+
+```bash
+rm package-lock.json
+```
 
 ```bash
 npm install
