@@ -9,13 +9,14 @@ import {
   Container,
   Paper,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const Signup = () => {
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });
       alert("Signup successful!");
+      navigate("/Login");
     } catch (err) {
       setError(err.message);
     }
