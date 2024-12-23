@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl, Box, Chip } from "@mui/material";
+import { TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl, Box, Chip, Snackbar } from "@mui/material";
 import { Add, CheckCircle, Menu, AccountCircle } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
-import { auth } from '../firebase';
+import { auth } from "../firebase";
 
 const AddRecipe = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     servings: "",
-    ingredients: "",
+    ingredients: [],
     type: "",
     nutrition: "",
     directions: "",
@@ -20,88 +20,47 @@ const AddRecipe = () => {
     tips: "",
     otherMedia: [],
     permissions: { visibility: "private", editOption: "", tags: [] },
-    additionalFields: []
+    additionalFields: [],
   });
   const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [ingredient, setIngredient] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // Success or failure message
   const navigate = useNavigate();
   const db = getFirestore();
   const storage = getStorage();
 
   const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigate("/login"); // Redirect to login page after logout
-    } catch (err) {
-      console.error("Error logging out:", err);
-    }
+    await auth.signOut();
+    navigate("/login");
   };
 
   const handleProfile = async () => {
-    try {
-      await auth.signOut();
-      navigate("/profile"); // Redirect to profile page
-    } catch (err) {
-      console.error("Error logging out:", err);
-    }
+    await auth.signOut();
+    navigate("/profile");
   };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const IngredientsInput = ({ handleInputChange }) => {
-    const [ingredient, setIngredient] = useState('');
-    const [ingredientsList, setIngredientsList] = useState([]);
-
-    // Handle input change
-    const handleInputChangeLocal = (event) => {
-      setIngredient(event.target.value);  // Update the local state for the ingredient
-      if (handleInputChange) {
-        handleInputChange(event);  // Call the global input change handler if provided
-      }
-    };
-
-    // Handle adding an ingredient
-    const handleAddIngredient = (event) => {
-      if (event.key === 'Enter' && ingredient.trim() !== '') {
-        setIngredientsList((prevList) => [...prevList, ingredient]);
-        setIngredient(''); // Clear input after adding
-      }
-    };
-
-    // Handle removing an ingredient
-    const handleRemoveIngredient = (ingredientToRemove) => {
-      setIngredientsList(ingredientsList.filter((ing) => ing !== ingredientToRemove));
-    };
-
-    return (
-      <div>
-        <TextField
-          label="Ingredients"
-          value={ingredient}
-          onChange={handleInputChangeLocal} // Update local ingredient state
-          onKeyDown={handleAddIngredient}  // Add ingredient on Enter key press
-          fullWidth
-          required
-          sx={{ marginBottom: '10px'}}
-        />
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {ingredientsList.map((ing, index) => (
-            <Chip
-              key={index}
-              label={ing}
-              onDelete={() => handleRemoveIngredient(ing)}
-              color="primary"
-            />
-          ))}
-        </Box>
-      </div>
-    );
+  const handleAddIngredient = (event) => {
+    if (event.key === "Enter" && ingredient.trim() !== "") {
+      setFormData((prev) => ({
+        ...prev,
+        ingredients: [...prev.ingredients, ingredient.trim()],
+      }));
+      setIngredient("");
+    }
   };
 
-  // Handle file uploads
+  const handleRemoveIngredient = (ingredientToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      ingredients: prev.ingredients.filter((ing) => ing !== ingredientToRemove),
+    }));
+  };
+
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     setFormData((prev) => ({
@@ -110,7 +69,6 @@ const AddRecipe = () => {
     }));
   };
 
-  // Add new custom field
   const addCustomField = () => {
     setFormData((prev) => ({
       ...prev,
@@ -118,33 +76,47 @@ const AddRecipe = () => {
     }));
   };
 
-  // Save form data to Firestore
   const handleSubmit = async () => {
+    // Check if the user is authenticated
+    if (!auth.currentUser) {
+      alert("You must be logged in to submit a recipe.");
+      return;
+    }
+  
     try {
-      // Save form data
       const docRef = await addDoc(collection(db, "recipes"), {
         ...formData,
-        userId: auth.currentUser.uid, // Associate with logged-in user
+        userId: auth.currentUser.uid,  // Safe to access now
       });
-
-      // Save media files
+  
+      console.log("Recipe added successfully:", docRef.id);
+  
+      // Upload media files to storage
       formData.otherMedia.forEach(async (file) => {
-        const fileRef = ref(storage, `recipes/${docRef.id}/${file.name}`);
-        await uploadBytes(fileRef, file);
+        try {
+          const fileRef = ref(storage, `recipes/${docRef.id}/${file.name}`);
+          await uploadBytes(fileRef, file);
+          console.log("File uploaded successfully:", file.name);
+        } catch (uploadError) {
+          console.error("File upload failed:", uploadError);
+          setSuccessMessage("Failed to upload media. Please try again.");
+        }
       });
-
-      navigate(`/preview/${docRef.id}`);
+  
+      setSuccessMessage("Recipe submitted successfully!"); // Success message
     } catch (error) {
-      console.error("Error saving recipe:", error);
+      console.error("Error adding recipe:", error); // Log the actual error
+      setSuccessMessage("Failed to save recipe. Please try again."); // Failure message
     }
-  };
+  };  
 
   return (
     <div style={{ display: "flex" }}>
-      {/* Sidebar */}
       {dashboardOpen && (
         <div className="sidebar">
-          <div style={{ cursor: 'pointer'}} onClick={() => setDashboardOpen(!dashboardOpen)} className="sidebar-logo">🍳</div>
+          <div style={{ cursor: "pointer" }} onClick={() => setDashboardOpen(!dashboardOpen)} className="sidebar-logo">
+            🍳
+          </div>
           <ul className="sidebar-menu">
             <li>Home</li>
             <li>Add Recipe</li>
@@ -157,132 +129,109 @@ const AddRecipe = () => {
           </button>
         </div>
       )}
-
-      {/* Main Content */}
       <div style={{ flex: 1, padding: 20 }}>
-        {/* Toggle Dashboard */}
         {!dashboardOpen && (
-          <IconButton style={{ float: 'left'}} onClick={() => setDashboardOpen(!dashboardOpen)}>
-            <Menu sx={{ fontSize: '2rem' }}/>
+          <IconButton style={{ float: "left" }} onClick={() => setDashboardOpen(!dashboardOpen)}>
+            <Menu sx={{ fontSize: "2rem" }} />
           </IconButton>
         )}
-
-        {/* Profile Icon */}
-        <IconButton style={{ float: "right"}} onClick={() => navigate("/profile")}>
-          <AccountCircle sx={{ fontSize: '2rem' }}/>
+        <IconButton style={{ float: "right" }} onClick={() => navigate("/profile")}>
+          <AccountCircle sx={{ fontSize: "2rem" }} />
         </IconButton>
-
-        {/* Recipe Form */}
         <h1>Add Recipe</h1>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2, // Adds space between each form field
-            width: '100%', // Ensure the form takes the full width of its parent
-            maxWidth: '100%', // Optional: Set max width for form to look more structured
-            margin: '0 auto', // Centers the form on the page
-            marginBottom: '17px',
-          }}
-        >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%", margin: "0 auto", padding: 2 }}>
+          <TextField label="Name" name="name" onChange={handleInputChange} fullWidth required />
+          <TextField label="Description" name="description" onChange={handleInputChange} fullWidth required />
+          <TextField label="Servings" name="servings" onChange={handleInputChange} fullWidth />
           <TextField
-            label="Name"
-            name="name"
-            onChange={handleInputChange}
+            label="Add an Ingredient"
+            value={ingredient}
+            onChange={(e) => setIngredient(e.target.value)}
+            onKeyDown={handleAddIngredient}
             fullWidth
-            required
-            sx={{ marginBottom: '5px' }} // Adds bottom margin to each field
+            placeholder="Press Enter to add"
           />
-          <TextField
-            label="Description"
-            name="description"
-            onChange={handleInputChange}
-            fullWidth
-            required
-            sx={{ marginBottom: '5px' }}
-          />
-          <TextField
-            label="Servings"
-            name="servings"
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ marginBottom: '5px' }}
-          />
-          <IngredientsInput handleInputChange={handleInputChange} />
-        </Box>
-        <FormControl fullWidth>
-          <InputLabel>Permissions</InputLabel>
-          <Select
-            name="permissions.visibility"
-            value={formData.permissions.visibility}
-            onChange={(e) => setFormData((prev) => ({
-              ...prev,
-              permissions: { ...prev.permissions, visibility: e.target.value },
-            }))}
-          >
-            <MenuItem value="private">Private</MenuItem>
-            <MenuItem value="public">Public</MenuItem>
-          </Select>
-        </FormControl>
-
-        {formData.permissions.visibility === "public" && (
-          <div>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            {formData.ingredients.map((ing, index) => (
+              <Chip key={index} label={ing} onDelete={() => handleRemoveIngredient(ing)} color="primary" />
+            ))}
+          </Box>
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel>Permissions</InputLabel>
+            <Select
+              name="permissions.visibility"
+              value={formData.permissions.visibility}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  permissions: { ...prev.permissions, visibility: e.target.value },
+                }))
+              }
+            >
+              <MenuItem value="private">Private</MenuItem>
+              <MenuItem value="public">Public</MenuItem>
+            </Select>
+          </FormControl>
+          {formData.permissions.visibility === "public" && (
             <TextField
-              label="Who Can Edit (Usernames/Groups)"
+              label="Who Can Edit"
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
                   permissions: { ...prev.permissions, editOption: e.target.value },
                 }))
               }
+              placeholder="Enter usernames/groups"
               fullWidth
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.value.trim() !== "") {
+                  setFormData((prev) => ({
+                    ...prev,
+                    permissions: {
+                      ...prev.permissions,
+                      tags: [...prev.permissions.tags, e.target.value.trim()],
+                    },
+                  }));
+                  e.target.value = "";
+                }
+              }}
             />
-          </div>
-        )}
-
-        {/* File Upload */}
-        <Button variant="contained" component="label">
-          Add Media
-          <input type="file" multiple hidden onChange={handleFileUpload} />
-        </Button>
-
-        {/* Add Custom Fields */}
-        {formData.additionalFields.map((_, index) => (
-          <TextField
-            key={index}
-            label={`Custom Field ${index + 1}`}
-            onChange={(e) => {
-              const newFields = [...formData.additionalFields];
-              newFields[index] = e.target.value;
-              setFormData((prev) => ({ ...prev, additionalFields: newFields }));
-            }}
-            fullWidth
-          />
-        ))}
-        <Button onClick={addCustomField} startIcon={<Add />}>
-          Add More Fields
-        </Button>
-
-        {/* Submit Button */}
-        <div
-          onClick={handleSubmit}
-          style={{
-            position: 'fixed',
-            bottom: '20px', // Adjust the space from the bottom
-            right: '20px',  // Adjust the space from the right
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.2rem', // Space between the text and the icon
-            fontWeight: 'bold', // Make the text bold
-            cursor: 'pointer',
-          }}
-        >
-          Submit
-          <IconButton>
-            <CheckCircle style={{ fontSize: 30, color: 'green' }} />
-          </IconButton>
-        </div>
+          )}
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            {formData.permissions.tags.map((tag, index) => (
+              <Chip
+                key={index}
+                label={tag}
+                onDelete={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    permissions: {
+                      ...prev.permissions,
+                      tags: prev.permissions.tags.filter((t) => t !== tag),
+                    },
+                  }))
+                }
+              />
+            ))}
+          </Box>
+          <Button variant="contained" component="label" sx={{ alignSelf: "flex-start" }}>
+            Add Media
+            <input type="file" multiple hidden onChange={handleFileUpload} />
+          </Button>
+          <Button onClick={addCustomField} startIcon={<Add />} sx={{ alignSelf: "center", margin: "0 auto" }}>
+            Add More Fields
+          </Button>
+          <Box sx={{ position: "fixed", bottom: 20, right: 20, display: "flex", alignItems: "center", gap: 0.1, cursor: "pointer" }} onClick={handleSubmit}>
+            <span style={{ fontWeight: "bold" }}>Submit</span>
+            <IconButton>
+              <CheckCircle sx={{ fontSize: 30, color: "green" }} />
+            </IconButton>
+          </Box>
+        </Box>
       </div>
+
+      {/* Success or failure alert */}
+      {successMessage && alert(successMessage)} {/* Show success or failure message */}
     </div>
   );
 };
