@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl, Box, Chip, Snackbar } from "@mui/material";
-import { Add, CheckCircle, Menu, AccountCircle } from "@mui/icons-material";
+import { Add, CheckCircle, Menu, AccountCircle, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -20,7 +20,7 @@ const AddRecipe = () => {
     tips: "",
     otherMedia: [],
     permissions: { visibility: "private", editOption: "", tags: [] },
-    additionalFields: [],
+    additionalFields: [], // Store additional fields here
   });
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [ingredient, setIngredient] = useState("");
@@ -28,6 +28,14 @@ const AddRecipe = () => {
   const navigate = useNavigate();
   const db = getFirestore();
   const storage = getStorage();
+
+  useEffect(() => {
+    console.log("WE ARE HERE");
+    console.log("Current User:", auth.currentUser); // Log current user state
+    // if (!auth.currentUser) {
+    //   navigate("/login");
+    // }
+  }, [navigate]);
 
   const handleLogout = async () => {
     await auth.signOut();
@@ -67,13 +75,25 @@ const AddRecipe = () => {
       ...prev,
       otherMedia: [...prev.otherMedia, ...files],
     }));
+    console.log("Selected media files:", files); // Log the files to the console
   };
 
   const addCustomField = () => {
     setFormData((prev) => ({
       ...prev,
-      additionalFields: [...prev.additionalFields, ""],
+      additionalFields: [...prev.additionalFields, { fieldName: "", fieldContent: "" }],
     }));
+  };
+
+  const handleAdditionalFieldChange = (index, type, value) => {
+    const updatedFields = [...formData.additionalFields];
+    updatedFields[index][type] = value;
+    setFormData((prev) => ({ ...prev, additionalFields: updatedFields }));
+  };
+
+  const removeField = (index) => {
+    const updatedFields = formData.additionalFields.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, additionalFields: updatedFields }));
   };
 
   const handleSubmit = async () => {
@@ -214,13 +234,52 @@ const AddRecipe = () => {
               />
             ))}
           </Box>
+
+          {/* Render additional fields */}
+          {formData.additionalFields.map((field, index) => (
+            <Box key={index} sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                label="Field Name"
+                value={field.fieldName}
+                onChange={(e) => handleAdditionalFieldChange(index, "fieldName", e.target.value)}
+                fullWidth
+                sx={{ flex: 1 }}
+              />
+              <TextField
+                label="Field Content"
+                value={field.fieldContent}
+                onChange={(e) => handleAdditionalFieldChange(index, "fieldContent", e.target.value)}
+                fullWidth
+                sx={{ flex: 3 }}
+              />
+              <IconButton onClick={() => removeField(index)}>
+                <Close sx={{ color: "red" }} />
+              </IconButton>
+            </Box>
+          ))}
+
+          <Button onClick={addCustomField} startIcon={<Add />} sx={{ alignSelf: "center", margin: "0 auto" }}>
+            Add More Fields
+          </Button>
+
           <Button variant="contained" component="label" sx={{ alignSelf: "flex-start" }}>
             Add Media
             <input type="file" multiple hidden onChange={handleFileUpload} />
           </Button>
-          <Button onClick={addCustomField} startIcon={<Add />} sx={{ alignSelf: "center", margin: "0 auto" }}>
-            Add More Fields
-          </Button>
+
+          {/* Display the selected media */}
+          {formData.otherMedia.length > 0 && (
+            <Box sx={{ marginTop: 1, fontSize: "0.875rem", color: "gray", alignSelf: "flex-start" }}>
+              <ul style={{ paddingLeft: 0 }}>
+                {formData.otherMedia.map((file, index) => (
+                  <li key={index} style={{ listStyleType: "none", marginBottom: "0.5rem" }}>
+                    {file.name}
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
+
           <Box sx={{ position: "fixed", bottom: 20, right: 20, display: "flex", alignItems: "center", gap: 0.1, cursor: "pointer" }} onClick={handleSubmit}>
             <span style={{ fontWeight: "bold" }}>Submit</span>
             <IconButton>
