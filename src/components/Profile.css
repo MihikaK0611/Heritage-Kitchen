@@ -9,6 +9,8 @@
     width: 250px;
     background-color: #f4f4f9;
     padding: 20px;
+    height: 100vh;
+    top: 0;
 }
 
 .sidebar-logo {
@@ -30,13 +32,14 @@
 }
 
 .logout-btn {
+    position: absolute;
     background-color: #ff5733;
     color: white;
     border: none;
     padding: 10px;
-    width: 100%;
     cursor: pointer;
-    margin-top: 20px;
+    left: 110px;
+    bottom: 20px;
 }
 
 /* Main Content Styles */

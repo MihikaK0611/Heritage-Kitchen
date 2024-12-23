@@ -36,6 +36,15 @@ const Profile = () => {
     }
   };
 
+  const handleAddRecipe = async () => {
+      try {
+        await auth.signOut();
+        navigate("/addrecipe"); // Redirect to Add Recipe page
+      } catch (err) {
+        console.error("Error logging out:", err);
+      }
+  };
+
   const handleSearch = () => {
     console.log(`Searching for ${searchQuery} in ${searchCategory}`);
     if (searchCategory === "recipe") {
@@ -58,13 +67,13 @@ const Profile = () => {
         <div className="sidebar-logo">🍳</div>
         <ul className="sidebar-menu">
           <li>Home</li>
-          <li>Add Recipe</li>
+          <li onClick={handleAddRecipe}>Add Recipe</li>
           <li>Create Group</li>
           <li>Profile</li>
           <li>Settings</li>
         </ul>
         <button className="logout-btn" onClick={handleLogout}>
-          Logout
+          LOGOUT
         </button>
       </div>
 
