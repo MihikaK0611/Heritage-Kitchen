@@ -130,6 +130,13 @@ const AddRecipe = () => {
     }
   };  
 
+  const handleRemoveFile = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      otherMedia: prev.otherMedia.filter((_, i) => i !== index), // Remove the file at the given index
+    }));
+  };
+
   return (
     <div style={{ display: "flex" }}>
       {dashboardOpen && (
@@ -272,8 +279,11 @@ const AddRecipe = () => {
             <Box sx={{ marginTop: 1, fontSize: "0.875rem", color: "gray", alignSelf: "flex-start" }}>
               <ul style={{ paddingLeft: 0 }}>
                 {formData.otherMedia.map((file, index) => (
-                  <li key={index} style={{ listStyleType: "none", marginBottom: "0.5rem" }}>
+                  <li key={index} style={{ listStyleType: "none", marginBottom: "0.5rem", display: "flex", alignItems: "center" }}>
                     {file.name}
+                    <IconButton onClick={() => handleRemoveFile(index)} sx={{ marginLeft: "8px" }}>
+                      <Close sx={{ color: "red", fontSize: "1rem" }} />
+                    </IconButton>
                   </li>
                 ))}
               </ul>
