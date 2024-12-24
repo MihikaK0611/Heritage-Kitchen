@@ -43,7 +43,6 @@ const AddRecipe = () => {
   };
 
   const handleProfile = async () => {
-    await auth.signOut();
     navigate("/profile");
   };
 
