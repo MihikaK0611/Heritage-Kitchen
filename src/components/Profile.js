@@ -36,14 +36,10 @@ const Profile = () => {
     }
   };
 
-  const handleAddRecipe = async () => {
-      try {
-        await auth.signOut();
-        navigate("/addrecipe"); // Redirect to Add Recipe page
-      } catch (err) {
-        console.error("Error logging out:", err);
-      }
+  const handleAddRecipe = () => {
+    navigate("/addrecipe"); // Navigate to Add Recipe page
   };
+
 
   const handleSearch = () => {
     console.log(`Searching for ${searchQuery} in ${searchCategory}`);
