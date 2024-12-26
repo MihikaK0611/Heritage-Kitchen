@@ -4,6 +4,7 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import AddRecipe from "./components/AddRecipe";
+import HomePage from "./components/HomePage"
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/addrecipe" element={<AddRecipe />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </Router>
   );

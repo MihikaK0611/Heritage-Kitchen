@@ -40,6 +40,9 @@ const Profile = () => {
     navigate("/addrecipe"); // Navigate to Add Recipe page
   };
 
+  const handleHomePage = () => {
+    navigate("/home"); // Navigate to Home page
+  };
 
   const handleSearch = () => {
     console.log(`Searching for ${searchQuery} in ${searchCategory}`);
@@ -62,7 +65,7 @@ const Profile = () => {
       <div className="sidebar">
         <div className="sidebar-logo">🍳</div>
         <ul className="sidebar-menu">
-          <li>Home</li>
+          <li onClick={handleHomePage}>Home</li>
           <li onClick={handleAddRecipe}>Add Recipe</li>
           <li>Create Group</li>
           <li>Profile</li>

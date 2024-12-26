@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl, Box, Chip, Snackbar } from "@mui/material";
+import { TextField, Button, IconButton, Select, MenuItem, InputLabel, FormControl, Box, Chip } from "@mui/material";
 import { Add, CheckCircle, Menu, AccountCircle, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth } from "../firebase";
+import "./Profile.css";
 
 const AddRecipe = () => {
   const [formData, setFormData] = useState({
@@ -20,30 +21,36 @@ const AddRecipe = () => {
     tips: "",
     otherMedia: [],
     permissions: { visibility: "private", editOption: "", tags: [] },
-    additionalFields: [], // Store additional fields here
+    additionalFields: [],
   });
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [ingredient, setIngredient] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // Success or failure message
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
   const db = getFirestore();
   const storage = getStorage();
 
   useEffect(() => {
-    console.log("WE ARE HERE");
-    console.log("Current User:", auth.currentUser); // Log current user state
-    // if (!auth.currentUser) {
-    //   navigate("/login");
-    // }
+    if (!auth.currentUser) {
+      navigate("/login");
+    }
   }, [navigate]);
 
   const handleLogout = async () => {
-    await auth.signOut();
-    navigate("/login");
-  };
+      try {
+        await auth.signOut();
+        navigate("/login"); // Redirect to login page after logout
+      } catch (err) {
+        console.error("Error logging out:", err);
+      }
+    };
 
   const handleProfile = async () => {
     navigate("/profile");
+  };
+
+  const handleHomePage = () => {
+    navigate("/home"); // Navigate to Home page
   };
 
   const handleInputChange = (e) => {
@@ -74,7 +81,6 @@ const AddRecipe = () => {
       ...prev,
       otherMedia: [...prev.otherMedia, ...files],
     }));
-    console.log("Selected media files:", files); // Log the files to the console
   };
 
   const addCustomField = () => {
@@ -96,43 +102,41 @@ const AddRecipe = () => {
   };
 
   const handleSubmit = async () => {
-    // Check if the user is authenticated
     if (!auth.currentUser) {
       alert("You must be logged in to submit a recipe.");
       return;
     }
-  
+
     try {
+      // Upload files to Firebase Storage and get their URLs
+      const mediaURLs = await Promise.all(
+        formData.otherMedia.map(async (file) => {
+          const fileRef = ref(storage, `recipes/${auth.currentUser.uid}/${file.name}`);
+          await uploadBytes(fileRef, file);
+          const fileURL = await getDownloadURL(fileRef);
+          return fileURL;
+        })
+      );
+
+      // Save the recipe data to Firestore
       const docRef = await addDoc(collection(db, "recipes"), {
         ...formData,
-        userId: auth.currentUser.uid,  // Safe to access now
+        otherMedia: mediaURLs,
+        userId: auth.currentUser.uid,
       });
-  
+
       console.log("Recipe added successfully:", docRef.id);
-  
-      // Upload media files to storage
-      formData.otherMedia.forEach(async (file) => {
-        try {
-          const fileRef = ref(storage, `recipes/${docRef.id}/${file.name}`);
-          await uploadBytes(fileRef, file);
-          console.log("File uploaded successfully:", file.name);
-        } catch (uploadError) {
-          console.error("File upload failed:", uploadError);
-          setSuccessMessage("Failed to upload media. Please try again.");
-        }
-      });
-  
-      setSuccessMessage("Recipe submitted successfully!"); // Success message
+      setSuccessMessage("Recipe submitted successfully!");
     } catch (error) {
-      console.error("Error adding recipe:", error); // Log the actual error
-      setSuccessMessage("Failed to save recipe. Please try again."); // Failure message
+      console.error("Error adding recipe:", error);
+      setSuccessMessage("Failed to save recipe. Please try again.");
     }
-  };  
+  };
 
   const handleRemoveFile = (index) => {
     setFormData((prev) => ({
       ...prev,
-      otherMedia: prev.otherMedia.filter((_, i) => i !== index), // Remove the file at the given index
+      otherMedia: prev.otherMedia.filter((_, i) => i !== index),
     }));
   };
 
@@ -144,7 +148,7 @@ const AddRecipe = () => {
             🍳
           </div>
           <ul className="sidebar-menu">
-            <li>Home</li>
+            <li onClick={handleHomePage}>Home</li>
             <li>Add Recipe</li>
             <li>Create Group</li>
             <li onClick={handleProfile}>Profile</li>
@@ -298,8 +302,7 @@ const AddRecipe = () => {
         </Box>
       </div>
 
-      {/* Success or failure alert */}
-      {successMessage && alert(successMessage)} {/* Show success or failure message */}
+      {successMessage && alert(successMessage)}
     </div>
   );
 };

@@ -23,7 +23,7 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("Login successful!");
-      navigate("/Profile"); // Redirect after login (change path as needed)
+      navigate("/home"); // Redirect after login (change path as needed)
     } catch (err) {
       setError(err.message);
     }

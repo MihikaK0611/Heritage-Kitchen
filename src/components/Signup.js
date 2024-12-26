@@ -26,7 +26,7 @@ const Signup = () => {
       const user = userCredential.user;
       await updateProfile(user, { displayName: name });
       alert("Signup successful!");
-      navigate("/Profile");
+      navigate("/home");
     } catch (err) {
       setError(err.message);
     }

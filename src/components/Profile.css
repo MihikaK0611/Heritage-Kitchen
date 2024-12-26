@@ -178,6 +178,42 @@ hr {
     cursor: pointer;
 }
 
+.search-filter-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+  
+.search-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+  
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+  
+.search-category,
+.sort-category {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+  
+.search-button {
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* Content Card Styles */
 .content-card {
     display: flex;
