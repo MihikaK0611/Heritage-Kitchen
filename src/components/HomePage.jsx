@@ -6,7 +6,7 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Menu, AccountCircle } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -15,18 +15,20 @@ import "./Profile.css";
 
 const HomePage = () => {
   const [dashboardOpen, setDashboardOpen] = useState(true);
-
-  // Store original recipes and filtered recipes separately
   const [originalRecipes] = useState([
-    { name: "Pasta Primavera", description: "A classic Italian dish with fresh vegetables and pasta." },
-    { name: "Chicken Curry", description: "A rich and flavorful curry made with tender chicken pieces." },
-    { name: "Chocolate Cake", description: "A moist and delicious dessert perfect for any occasion." },
+    { name: "Pasta Primavera", description: "A classic Italian dish with fresh vegetables and pasta.", occasion: "Dinner", diet: "Vegetarian", ingredients: ["Pasta", "Tomato"] },
+    { name: "Chicken Curry", description: "A rich and flavorful curry made with tender chicken pieces.", occasion: "Lunch", diet: "Non-Vegetarian", ingredients: ["Chicken", "Curry Powder"] },
+    { name: "Chocolate Cake", description: "A moist and delicious dessert perfect for any occasion.", occasion: "Dessert", diet: "Vegetarian", ingredients: ["Chocolate", "Flour"] },
   ]);
   const [recipes, setRecipes] = useState([...originalRecipes]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchCategory, setSearchCategory] = useState("recipe");
   const [sortOrder, setSortOrder] = useState("asc");
+
+  const [occasionFilter, setOccasionFilter] = useState("");
+  const [dietFilter, setDietFilter] = useState("");
+  const [ingredientFilter, setIngredientFilter] = useState("");
 
   const navigate = useNavigate();
 
@@ -48,28 +50,43 @@ const HomePage = () => {
   };
 
   const handleSearch = () => {
-    let filteredRecipes = [...originalRecipes]; // Always start with the original list
+    let filteredRecipes = [...originalRecipes];
 
-    // Filter based on search query and category
     if (searchCategory === "recipe") {
-      filteredRecipes = filteredRecipes.filter((recipe) =>
-        recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      if (searchQuery) {
+        filteredRecipes = filteredRecipes.filter((recipe) =>
+          recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (occasionFilter) {
+        filteredRecipes = filteredRecipes.filter(
+          (recipe) => recipe.occasion === occasionFilter
+        );
+      }
+
+      if (dietFilter) {
+        filteredRecipes = filteredRecipes.filter(
+          (recipe) => recipe.diet === dietFilter
+        );
+      }
+
+      if (ingredientFilter) {
+        filteredRecipes = filteredRecipes.filter((recipe) =>
+          recipe.ingredients.some((ing) =>
+            ing.toLowerCase().includes(ingredientFilter.toLowerCase())
+          )
+        );
+      }
     }
 
-    // Sort the recipes
     if (sortOrder === "asc") {
       filteredRecipes.sort((a, b) => a.name.localeCompare(b.name));
     } else {
       filteredRecipes.sort((a, b) => b.name.localeCompare(a.name));
     }
 
-    setRecipes(filteredRecipes); // Update the filtered recipes
-  };
-
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
-    handleSearch(); // Re-apply the search and sort
+    setRecipes(filteredRecipes);
   };
 
   return (
@@ -102,7 +119,6 @@ const HomePage = () => {
         {/* Search & Filter Section */}
         <div className="search-filter-container">
           <div className="search-filter-row">
-            {/* Dashboard Icon */}
             <IconButton
               onClick={() => setDashboardOpen(!dashboardOpen)}
               style={{ marginRight: "10px" }}
@@ -110,7 +126,6 @@ const HomePage = () => {
               <Menu sx={{ fontSize: "2rem" }} />
             </IconButton>
 
-            {/* Search Bar */}
             <input
               className="search-input"
               type="text"
@@ -119,7 +134,6 @@ const HomePage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
 
-            {/* Dropdown for Category */}
             <select
               className="search-category"
               value={searchCategory}
@@ -130,26 +144,54 @@ const HomePage = () => {
               <option value="groupname">Group Name</option>
             </select>
 
-            {/* Dropdown for Sort Order */}
             <select
               className="sort-category"
               value={sortOrder}
-              onChange={handleSortChange}
+              onChange={(e) => setSortOrder(e.target.value)}
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
             </select>
 
-            {/* Search Icon */}
             <button className="search-button" onClick={handleSearch}>
               🔍
             </button>
 
-            {/* Profile Icon */}
             <IconButton onClick={handleProfile} style={{ marginLeft: "auto" }}>
               <AccountCircle sx={{ fontSize: "2rem" }} />
             </IconButton>
           </div>
+
+          {/* Additional Filters for Recipes */}
+          {searchCategory === "recipe" && (
+            <div className="additional-filters">
+              <select
+                value={occasionFilter}
+                onChange={(e) => setOccasionFilter(e.target.value)}
+              >
+                <option value="">Occasion</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dessert">Dessert</option>
+              </select>
+
+              <select
+                value={dietFilter}
+                onChange={(e) => setDietFilter(e.target.value)}
+              >
+                <option value="">Dietary Preference</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Non-Vegetarian">Non-Vegetarian</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Search by ingredient..."
+                value={ingredientFilter}
+                onChange={(e) => setIngredientFilter(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Recipe List */}
@@ -167,21 +209,22 @@ const HomePage = () => {
                 padding: "10px",
               }}
             >
-              
               <div>
                 <ListItemText
-                    primary={
+                  primary={
                     <Typography style={{ fontWeight: "bold", fontSize: "16px" }}>
-                        {recipe.name}
+                      {recipe.name}
                     </Typography>
-                    }
-                    secondary={
-                    <Typography style={{ fontSize: "14px", color: "rgba(0, 0, 0, 0.6)" }}>
-                        {recipe.description}
+                  }
+                  secondary={
+                    <Typography
+                      style={{ fontSize: "14px", color: "rgba(0, 0, 0, 0.6)" }}
+                    >
+                      {recipe.description}
                     </Typography>
-                    }
+                  }
                 />
-                </div>
+              </div>
 
               <ListItemAvatar>
                 <Avatar
