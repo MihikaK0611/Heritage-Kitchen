@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase"; // Firebase setup
 import { useNavigate } from "react-router-dom";
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
+} from "@mui/material";
+import { Menu, AccountCircle } from "@mui/icons-material";
 import "./Profile.css";
 
 const Profile = () => {
+  const [dashboardOpen, setDashboardOpen] = useState(true);
   const [displayName, setDisplayName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchCategory, setSearchCategory] = useState("recipe"); // Default category is 'recipe'
-  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order
+  const [searchCategory, setSearchCategory] = useState("recipe");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const [occasionFilter, setOccasionFilter] = useState("");
+  const [dietFilter, setDietFilter] = useState("");
+  const [ingredientFilter, setIngredientFilter] = useState("");
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -45,36 +60,69 @@ const Profile = () => {
   };
 
   const handleSearch = () => {
-    console.log(`Searching for ${searchQuery} in ${searchCategory}`);
-    if (searchCategory === "recipe") {
-      console.log(`Sorting order: ${sortOrder}`);
-    } else if (searchCategory === "username") {
-      // Add logic to search users here
-    } else if (searchCategory === "groupname") {
-      // Add logic to search groups here
-    }
-  };
+    let filteredRecipes = [...originalRecipes];
 
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
+    if (searchCategory === "recipe") {
+      if (searchQuery) {
+        filteredRecipes = filteredRecipes.filter((recipe) =>
+          recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (occasionFilter) {
+        filteredRecipes = filteredRecipes.filter(
+          (recipe) => recipe.occasion === occasionFilter
+        );
+      }
+
+      if (dietFilter) {
+        filteredRecipes = filteredRecipes.filter(
+          (recipe) => recipe.diet === dietFilter
+        );
+      }
+
+      if (ingredientFilter) {
+        filteredRecipes = filteredRecipes.filter((recipe) =>
+          recipe.ingredients.some((ing) =>
+            ing.toLowerCase().includes(ingredientFilter.toLowerCase())
+          )
+        );
+      }
+    }
+
+    if (sortOrder === "asc") {
+      filteredRecipes.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      filteredRecipes.sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    setRecipes(filteredRecipes);
   };
 
   return (
     <div className="profile-page">
       {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-logo">🍳</div>
-        <ul className="sidebar-menu">
-          <li onClick={handleHomePage}>Home</li>
-          <li onClick={handleAddRecipe}>Add Recipe</li>
-          <li>Create Group</li>
-          <li>Profile</li>
-          <li>Settings</li>
-        </ul>
-        <button className="logout-btn" onClick={handleLogout}>
-          LOGOUT
-        </button>
-      </div>
+      {dashboardOpen && (
+        <div className="sidebar">
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => setDashboardOpen(!dashboardOpen)}
+            className="sidebar-logo"
+          >
+            🍳
+          </div>
+          <ul className="sidebar-menu">
+            <li onClick={handleHomePage}>Home</li>
+            <li onClick={handleAddRecipe}>Add Recipe</li>
+            <li>Create Group</li>
+            <li>Profile</li>
+            <li>Settings</li>
+          </ul>
+          <button className="logout-btn" onClick={handleLogout}>
+            LOGOUT
+          </button>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="main-content">
@@ -161,15 +209,25 @@ const Profile = () => {
         )}
 
         {/* Search & Filter Section */}
-        <div className="search-filter">
-          <div className="search-bar">
+        <div className="search-filter-container">
+          <div className="search-filter-row">
+            <IconButton
+              onClick={() => setDashboardOpen(!dashboardOpen)}
+              style={{ marginRight: "10px" }}
+            >
+              <Menu sx={{ fontSize: "2rem" }} />
+            </IconButton>
+
             <input
+              className="search-input"
               type="text"
               placeholder={`Search for ${searchCategory}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+
             <select
+              className="search-category"
               value={searchCategory}
               onChange={(e) => setSearchCategory(e.target.value)}
             >
@@ -177,17 +235,49 @@ const Profile = () => {
               <option value="username">Username</option>
               <option value="groupname">Group Name</option>
             </select>
-            <button onClick={handleSearch}>🔍</button>
+
+            <select
+              className="sort-category"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+
+            <button className="search-button" onClick={handleSearch}>
+              🔍
+            </button>
           </div>
 
-          {/* Sort & Filter Button for Recipe Search */}
+          {/* Additional Filters for Recipes */}
           {searchCategory === "recipe" && (
-            <div className="sort-filter">
-              <select value={sortOrder} onChange={handleSortChange}>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+            <div className="additional-filters">
+              <select
+                value={occasionFilter}
+                onChange={(e) => setOccasionFilter(e.target.value)}
+              >
+                <option value="">Occasion</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dessert">Dessert</option>
               </select>
-              <button onClick={handleSearch}>Sort & Filter</button>
+
+              <select
+                value={dietFilter}
+                onChange={(e) => setDietFilter(e.target.value)}
+              >
+                <option value="">Dietary Preference</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Non-Vegetarian">Non-Vegetarian</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Search by ingredient..."
+                value={ingredientFilter}
+                onChange={(e) => setIngredientFilter(e.target.value)}
+              />
             </div>
           )}
         </div>
