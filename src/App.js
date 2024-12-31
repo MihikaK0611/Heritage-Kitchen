@@ -4,18 +4,21 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
 import AddRecipe from "./components/AddRecipe";
-import HomePage from "./components/HomePage"
+import HomePage from "./components/HomePage";
+import LandingPage from "./components/LandingPage";
+import Feedback from "./components/Feedback";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/signup" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/addrecipe" element={<AddRecipe />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/feedback" element={<Feedback />} />
       </Routes>
     </Router>
   );
