@@ -49,6 +49,10 @@ const HomePage = () => {
     navigate("/addrecipe");
   };
 
+  const handleCreateGroup = () => {
+    navigate("/creategroup");
+  };
+
   const handleSearch = () => {
     let filteredRecipes = [...originalRecipes];
 
@@ -104,7 +108,7 @@ const HomePage = () => {
           <ul className="sidebar-menu">
             <li>Home</li>
             <li onClick={handleAddRecipe}>Add Recipe</li>
-            <li>Create Group</li>
+            <li onClick={handleCreateGroup}>Create Group</li>
             <li onClick={handleProfile}>Profile</li>
             <li>Settings</li>
           </ul>

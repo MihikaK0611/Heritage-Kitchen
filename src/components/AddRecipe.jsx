@@ -53,6 +53,10 @@ const AddRecipe = () => {
     navigate("/home"); // Navigate to Home page
   };
 
+  const handleCreateGroup = () => {
+    navigate("/creategroup");
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -150,7 +154,7 @@ const AddRecipe = () => {
           <ul className="sidebar-menu">
             <li onClick={handleHomePage}>Home</li>
             <li>Add Recipe</li>
-            <li>Create Group</li>
+            <li onClick={handleCreateGroup}>Create Group</li>
             <li onClick={handleProfile}>Profile</li>
             <li>Settings</li>
           </ul>
@@ -160,15 +164,18 @@ const AddRecipe = () => {
         </div>
       )}
       <div style={{ flex: 1, padding: 20 }}>
-        {!dashboardOpen && (
-          <IconButton style={{ float: "left" }} onClick={() => setDashboardOpen(!dashboardOpen)}>
+        <div>
+          <IconButton
+            onClick={() => setDashboardOpen(!dashboardOpen)}
+            style={{ marginRight: "10px", float: "left" }}
+          >
             <Menu sx={{ fontSize: "2rem" }} />
           </IconButton>
-        )}
-        <IconButton style={{ float: "right" }} onClick={() => navigate("/profile")}>
-          <AccountCircle sx={{ fontSize: "2rem" }} />
-        </IconButton>
-        <h1>Add Recipe</h1>
+          <IconButton style={{ float: "right" }} onClick={() => navigate("/profile")}>
+            <AccountCircle sx={{ fontSize: "2rem" }} />
+          </IconButton>
+          <h2>Add Recipe</h2>
+        </div>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%", margin: "0 auto", padding: 2 }}>
           <TextField label="Name" name="name" onChange={handleInputChange} fullWidth required />
           <TextField label="Description" name="description" onChange={handleInputChange} fullWidth required />

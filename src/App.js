@@ -7,6 +7,7 @@ import AddRecipe from "./components/AddRecipe";
 import HomePage from "./components/HomePage";
 import LandingPage from "./components/LandingPage";
 import Feedback from "./components/Feedback";
+import CreateGroup from "./components/CreateGroup";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/addrecipe" element={<AddRecipe />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/feedback" element={<Feedback />} />
+        <Route path="/creategroup" element={<CreateGroup />} />
       </Routes>
     </Router>
   );
