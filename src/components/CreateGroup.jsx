@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { Menu, AccountCircle } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
 
 const CreateGroup = () => {
   const [dashboardOpen, setDashboardOpen] = useState(true);
@@ -24,6 +25,27 @@ const CreateGroup = () => {
   const [privacy, setPrivacy] = useState("public");
 
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate("/login");
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
+  };
+
+  const handleProfile = async () => {
+    navigate("/profile");
+  };
+
+  const handleHomePage = () => {
+    navigate("/home");
+  };
+
+  const handleAddRecipe = () => {
+    navigate("/addrecipe");
+  };
 
   const handleAddMember = () => {
     if (newMember.trim() && !members.includes(newMember)) {
@@ -37,8 +59,9 @@ const CreateGroup = () => {
   };
 
   const handleCreateGroup = () => {
-    navigate("/groupprofile");
-  };
+    const groupData = { groupName, description, members, privacy };
+    navigate("/groupprofile", { state: { groupData } });
+  };  
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
@@ -53,13 +76,13 @@ const CreateGroup = () => {
             🍳
           </div>
           <ul className="sidebar-menu">
-            <li onClick={() => navigate("/home")}>Home</li>
-            <li onClick={() => navigate("/addrecipe")}>Add Recipe</li>
+            <li onClick={handleHomePage}>Home</li>
+            <li onClick={handleAddRecipe}>Add Recipe</li>
             <li>Create Group</li>
-            <li onClick={() => navigate("/profile")}>Profile</li>
+            <li onClick={handleProfile}>Profile</li>
             <li>Settings</li>
           </ul>
-          <button className="logout-btn" onClick={() => navigate("/login")}>
+          <button className="logout-btn" onClick={handleLogout}>
             LOGOUT
           </button>
         </div>
@@ -85,7 +108,7 @@ const CreateGroup = () => {
                 <Menu sx={{ fontSize: "2rem" }} />
               </IconButton>
               <IconButton
-                onClick={() => navigate("/profile")}
+                onClick={handleProfile}
                 style={{
                   marginBottom: "20px",
                   borderRadius: "50%", // Ensures circular shape
@@ -100,7 +123,6 @@ const CreateGroup = () => {
               Create a New Group
             </Typography>
             <form>
-              {/* Group Name */}
               <TextField
                 label="Group Name"
                 variant="outlined"
@@ -114,8 +136,6 @@ const CreateGroup = () => {
                   borderRadius: "4px",
                 }}
               />
-
-              {/* Description */}
               <TextField
                 label="Description"
                 variant="outlined"
@@ -130,8 +150,6 @@ const CreateGroup = () => {
                   borderRadius: "4px",
                 }}
               />
-
-              {/* Add Member Field & Button */}
               <Box sx={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
                 <TextField
                   label="Add Member"
@@ -161,8 +179,6 @@ const CreateGroup = () => {
                   Add
                 </Button>
               </Box>
-
-              {/* Members List */}
               <Box sx={{ marginBottom: "15px" }}>
                 {members.map((member, index) => (
                   <Chip
@@ -179,8 +195,6 @@ const CreateGroup = () => {
                   />
                 ))}
               </Box>
-
-              {/* Privacy Options */}
               <RadioGroup
                 value={privacy}
                 onChange={(e) => setPrivacy(e.target.value)}
@@ -203,8 +217,6 @@ const CreateGroup = () => {
                   label="Private"
                 />
               </RadioGroup>
-
-              {/* Create Group Button */}
               <Button
                 variant="contained"
                 fullWidth

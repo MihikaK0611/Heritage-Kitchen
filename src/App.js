@@ -8,6 +8,7 @@ import HomePage from "./components/HomePage";
 import LandingPage from "./components/LandingPage";
 import Feedback from "./components/Feedback";
 import CreateGroup from "./components/CreateGroup";
+import GroupProfile from "./components/GroupProfile";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/creategroup" element={<CreateGroup />} />
+        <Route path="/groupprofile" element={<GroupProfile />} />
       </Routes>
     </Router>
   );
