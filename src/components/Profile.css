@@ -4,6 +4,11 @@
     min-height: 100vh;
 }
 
+.group-profile-page {
+    display: flex;
+    flex-direction: row;
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
@@ -11,6 +16,7 @@
     padding: 20px;
     height: 100vh;
     top: 0;
+    overflow: hidden;
 }
 
 .sidebar-logo {
@@ -31,6 +37,17 @@
     cursor: pointer;
 }
 
+.sidebar-hidden .sidebar {
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+}
+  
+.sidebar-hidden .main-content {
+    margin-left: 0;
+}
+
+/* Logout Button */
 .logout-btn {
     position: absolute;
     background-color: #ff5733;
@@ -38,8 +55,14 @@
     border: none;
     padding: 10px;
     cursor: pointer;
-    left: 110px;
+    left: 85px;
     bottom: 20px;
+}
+
+/* Adjust when sidebar is hidden */
+.sidebar-hidden .logout-btn {
+    left: -100px;
+    pointer-events: none;
 }
 
 /* Main Content Styles */

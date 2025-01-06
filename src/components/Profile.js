@@ -281,6 +281,12 @@ const Profile = () => {
                 placeholder="Search by ingredient..."
                 value={ingredientFilter}
                 onChange={(e) => setIngredientFilter(e.target.value)}
+                style={{
+                  width: "200px",
+                  height: "23px",
+                  padding: "5px",
+                  fontSize: "13px",
+                }}
               />
             </div>
           )}
