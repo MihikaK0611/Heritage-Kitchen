@@ -1,0 +1,235 @@
+/* Overall Page Styles */
+.profile-page {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #f4f4f9;
+    padding: 20px;
+    height: 100vh;
+    top: 0;
+}
+
+.sidebar-logo {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.logout-btn {
+    position: absolute;
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    left: 110px;
+    bottom: 20px;
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* User Section */
+.user-section {
+    display: flex; /* Align avatar and name side by side */
+    align-items: center; /* Center items vertically */
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    font-size: 4rem;
+    margin-right: 10px; /* Reduced margin to bring them closer */
+}
+
+.user-info {
+    text-align: left;
+}
+
+.username-input {
+    font-size: 24px; /* Increased font size for username */
+    font-weight: bold;
+    border: none;
+    width: auto;
+    margin-bottom: 10px;
+    background: transparent;
+    text-align: left;
+}
+
+.user-stats {
+    display: flex;
+    justify-content: left;
+    gap: 15px; /* Reduce the gap between clickable elements */
+    font-size: 1rem; /* Smaller font size for clickable elements */
+    cursor: pointer;
+}
+
+.clickable {
+    text-decoration: underline;
+    color: #0073e6;
+}
+
+hr {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+}
+
+/* List Styles */
+.list {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.list h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.list li {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.list p {
+    font-size: 1rem;
+    color: #888;
+}
+
+/* Search & Filter Section */
+.search-filter {
+    margin-top: 30px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    padding: 10px;
+    font-size: 1rem;
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-bar select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-bar button {
+    background-color: #0073e6;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sort-filter {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sort-filter select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.sort-filter button {
+    background-color: #0073e6;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-filter-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+  
+.search-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+  
+.search-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+  
+.search-category,
+.sort-category {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+  
+.search-button {
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Content Card Styles */
+.content-card {
+    display: flex;
+    gap: 20px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+}
