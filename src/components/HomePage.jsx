@@ -94,7 +94,7 @@ const HomePage = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className={`group-profile-page ${!dashboardOpen ? "sidebar-hidden" : ""}`}>
       {/* Sidebar */}
       {dashboardOpen && (
         <div className="sidebar">
@@ -252,6 +252,66 @@ const HomePage = () => {
           ))}
         </List>
       </div>
+      <style jsx>{`
+        .group-profile-page {
+          display: flex;
+          flex-direction: row;
+          height: 100vh; /* Ensure full height */
+        }
+      
+        .sidebar {
+          width: 250px;
+          background-color: #f4f4f4;
+          padding: 20px;
+          box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+          height: 100%;
+          justify-content: space-between;
+          transition: transform 0.3s ease-in-out;
+        }
+      
+        .sidebar-menu li {
+          list-style: none;
+          margin: 10px 0;
+          padding: 10px 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+      
+        .sidebar-menu li:hover {
+          background-color: #2f58d4; /* Highlighted background */
+          color: white; /* Change text color to white */
+          transform: scale(1.05); /* Slightly scale up the menu item */
+        }
+      
+        .sidebar-logo {
+          font-size: 2rem;
+          margin-bottom: 20px;
+          color: #2f58d4;
+          transition: transform 0.3s ease, color 0.3s ease;
+        }
+      
+        .sidebar-logo:hover {
+          color: #315f76; /* Darker blue on hover */
+          transform: rotate(10deg); /* Slight rotation for a fun effect */
+        }
+      
+        .logout-btn {
+          background-color: #d9534f;
+          color: white;
+          border: none;
+          padding: 10px;
+          border-radius: 4px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+      
+        .logout-btn:hover {
+          background-color: #c9302c; /* Darker red on hover */
+          transform: scale(1.05); /* Slightly scale up */
+        }
+      `}</style> 
     </div>
   );
 };
