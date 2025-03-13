@@ -1,0 +1,28 @@
+.search-container {
+    text-align: center;
+  }
+  
+  input {
+    padding: 8px;
+    width: 60%;
+    margin-bottom: 20px;
+  }
+  
+  .recipe-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .recipe-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+    background: #f8f8f8;
+  }
+  
+  .recipe-box:hover {
+    background: #e8e8e8;
+  }
+  
