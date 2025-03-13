@@ -14,6 +14,7 @@ import AddRecipe from "./components/AddRecipe"; // Import CommitView component
 import DeleteRecipe from "./components/DeleteRecipe";
 import Search from "./components/Search";
 import RecipeDetails from "./components/RecipeDetails";
+import Feedback from "./components/Feedback";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,6 +71,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path = "/feedback" element={<Feedback/>}/>
 
       {/* Login & Signup Routes */}
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
