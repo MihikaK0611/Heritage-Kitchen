@@ -46,18 +46,14 @@ function RecipeTable({ recipeId, numComponents, savedComponents, setSavedCompone
           </div>
         ))}
       </div>
-      <button onClick={handleAddComponent}>Add Component</button>
-      <button className="final-submit-button" onClick={onFinalSubmit}>
-        Final Submit
-      </button>
+      <div className="button-container">
+        <button onClick={handleAddComponent}>Add Component</button>
+        <button className="final-submit-button" onClick={onFinalSubmit}>
+          Final Submit
+        </button>
+      </div>
     </div>
   );
 }
 
 export default RecipeTable;
-
-
-
-
-
-
