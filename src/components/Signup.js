@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import {
+    TextField,
+    Button,
+    Box,
+    Typography,
+    Container,
+    Paper,
+  } from "@mui/material";
+  import { useNavigate, Link } from "react-router-dom";
 import "../styles/Login.css";
 
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,27 +33,58 @@ function Signup() {
   };
 
   return (
-    <div className="signup-container">
-      <form className="signup-form" onSubmit={handleSubmit}>
-        <h2>Signup</h2>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Signup</button>
-        <p>Already have an account? <a href="/login">Login here</a></p>
-      </form>
-    </div>
+    <Container maxWidth="sm" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Typography variant="h4" mb={3} align="center">
+          Create Account
+        </Typography>
+        {error && (
+          <Typography color="error" align="center" mb={2}>
+            {error}
+          </Typography>
+        )}
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          <TextField
+            label="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Button type="submit" variant="contained" color="primary" size="large">
+            Sign Up
+          </Button>
+        </Box>
+        <Typography variant="body2" mt={3} align="center">
+          Already have an account?{" "}
+          <Link to="/login" style={{ textDecoration: "none", color: "#1976d2" }}>
+            Log In
+          </Link>
+        </Typography>
+      </Paper>
+    </Container>
   );
 }
 
